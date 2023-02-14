@@ -11,10 +11,10 @@ const link_db = `mongodb+srv://${process.env.USER_DB}:${process.env.PASSWORD_DB}
 
 @Module({
   imports: [
-    UsersModule,
     MongooseModule.forRoot(link_db, {
       writeConcern: { w: 'majority' },
     }),
+    UsersModule,
     AuthModule,
     ProductsModule,
   ],
