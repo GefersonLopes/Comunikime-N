@@ -9,12 +9,5 @@ export class User extends Document {
   password: string;
   @Prop({ default: false })
   isAdm: boolean;
-
-  constructor(data?: Partial<User>) {
-    super();
-    this.username = data.username;
-    this.password = data.password;
-    this.isAdm = data.isAdm;
-  }
 }
 export const UserSchema = SchemaFactory.createForClass(User);

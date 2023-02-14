@@ -8,7 +8,7 @@ export class ResponseProductDTO {
   @ApiProperty()
   price: number;
   @ApiProperty()
-  img: string | null;
+  img: string;
   @ApiProperty()
   _v: number;
 }

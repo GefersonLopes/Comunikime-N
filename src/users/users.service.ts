@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose/dist';
 import { Model } from 'mongoose';
 
@@ -44,12 +48,12 @@ export class UsersService {
     try {
       const user = await this.userModel.findById(id).exec();
       if (!user) {
-        throw new BadRequestException('User not found');
+        throw new NotFoundException('User not found');
       }
       user.password = undefined;
       return user;
     } catch (error) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
   }
 
@@ -60,7 +64,7 @@ export class UsersService {
     try {
       const userUpdate = await this.userModel.findById(id).exec();
       if (!userUpdate) {
-        throw new BadRequestException('User not found');
+        throw new NotFoundException('User not found');
       }
       if (updateUserDto.password) {
         updateUserDto.password = bcrypt.hashSync(updateUserDto.password, 10);
@@ -68,7 +72,7 @@ export class UsersService {
       await this.userModel.replaceOne({ _id: id }, updateUserDto).exec();
       return await this.userModel.findById(id).exec();
     } catch (error) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
   }
 
@@ -76,11 +80,11 @@ export class UsersService {
     try {
       const user = await this.userModel.findById(id).exec();
       if (!user) {
-        throw new BadRequestException('User not found');
+        throw new NotFoundException('User not found');
       }
       await this.userModel.findOneAndDelete({ _id: id }).exec();
     } catch (error) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
   }
 }

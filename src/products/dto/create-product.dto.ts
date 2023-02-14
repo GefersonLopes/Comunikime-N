@@ -22,6 +22,12 @@ export class CreateProductDto {
   @ApiProperty()
   price: number;
 
+  @IsNotEmpty()
+  @IsNumber()
+  //Swagger
+  @ApiProperty()
+  amount: number;
+
   //Swagger
   @ApiProperty()
   img: string;

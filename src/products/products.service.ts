@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -12,10 +16,7 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const { name } = createProductDto;
 
-    const verifyNameProduct = await this.productModel
-      .findOne({ name: name })
-      .exec();
-
+    const verifyNameProduct = await this.productModel.findOne({ name: name });
     if (verifyNameProduct) {
       throw new BadRequestException('Product already exists');
     }
@@ -26,19 +27,45 @@ export class ProductsService {
   }
 
   async findAll(): Promise<Product[]> {
-    const ProductList = await this.productModel.find().exec();
+    const ProductList = await this.productModel.find();
     return ProductList;
   }
 
   async findOne(id: string): Promise<Product> {
     try {
-      const product = await this.productModel.findById(id).exec();
+      const product = await this.productModel.findById(id);
       if (!product) {
-        throw new BadRequestException('Product not found');
+        throw new NotFoundException('Product not found');
       }
       return product;
     } catch (error) {
-      throw new BadRequestException('Product not found');
+      throw new NotFoundException('Product not found');
+    }
+  }
+
+  async buyProduct(id: string): Promise<Product> {
+    try {
+      const product = await this.productModel.findById(id);
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+
+      if (product.amount === 0) {
+        await this.remove(id);
+        return;
+      }
+
+      product.amount--;
+      await product.save();
+
+      if (product.amount === 0) {
+        await this.remove(id);
+        return;
+      }
+
+      return product;
+    } catch (error) {
+      throw new NotFoundException('Product not found');
     }
   }
 
@@ -47,27 +74,27 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     try {
-      const productUpdate = await this.productModel.findById(id).exec();
+      const productUpdate = await this.productModel.findById(id);
       if (!productUpdate) {
-        throw new BadRequestException('Product not found');
+        throw new NotFoundException('Product not found');
       }
 
-      await this.productModel.replaceOne({ _id: id }, updateProductDto).exec();
-      return await this.productModel.findById(id).exec();
+      await this.productModel.replaceOne({ _id: id }, updateProductDto);
+      return await this.productModel.findById(id);
     } catch (error) {
-      throw new BadRequestException('Product not found');
+      throw new NotFoundException('Product not found');
     }
   }
 
   async remove(id: string): Promise<void> {
     try {
-      const product = await this.productModel.findById(id).exec();
+      const product = await this.productModel.findById(id);
       if (!product) {
-        throw new BadRequestException('Product not found');
+        throw new NotFoundException('Product not found');
       }
-      await this.productModel.findOneAndDelete({ _id: id }).exec();
+      await this.productModel.findOneAndDelete({ _id: id });
     } catch (error) {
-      throw new BadRequestException('Product not found');
+      throw new NotFoundException('Product not found');
     }
   }
 }

@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ResponseUserDTO } from './responseSwagger/response';
 import { ResponseErrorDTO } from '../auth/responseSwagger/response';
-import { IsAdminGuard } from 'src/auth/auth.service';
+import { IsAdminGuard } from '../auth/auth.service';
 
 @Controller('users')
 @ApiTags('Users')
@@ -27,7 +27,7 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'Created', type: ResponseUserDTO })
   @ApiResponse({
     status: 400,
-    description: 'Data invalid',
+    description: 'username or password invalid',
     type: ResponseErrorDTO,
   })
   @ApiResponse({ status: 400, description: 'Username already exists' })
@@ -44,6 +44,7 @@ export class UsersController {
     type: ResponseUserDTO,
     isArray: true,
   })
+  @ApiResponse({ status: 401, description: 'Token invalid' })
   findAll() {
     return this.usersService.findAll();
   }
@@ -52,7 +53,8 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: 200, description: 'Ok', type: ResponseUserDTO })
-  @ApiResponse({ status: 400, description: 'Id invalid' })
+  @ApiResponse({ status: 401, description: 'Token invalid' })
+  @ApiResponse({ status: 404, description: 'Id invalid' })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
@@ -61,8 +63,9 @@ export class UsersController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, description: 'Ok', type: ResponseUserDTO })
-  @ApiResponse({ status: 400, description: 'Data invalid' })
-  @ApiResponse({ status: 400, description: 'Id invalid' })
+  @ApiResponse({ status: 400, description: 'username or password invalid' })
+  @ApiResponse({ status: 401, description: 'Token invalid' })
+  @ApiResponse({ status: 404, description: 'Id invalid' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
@@ -71,7 +74,8 @@ export class UsersController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user' })
   @ApiResponse({ status: 200, description: 'Ok' })
-  @ApiResponse({ status: 400, description: 'Id invalid' })
+  @ApiResponse({ status: 401, description: 'Token invalid' })
+  @ApiResponse({ status: 404, description: 'Id invalid' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }

@@ -9,11 +9,7 @@ export class Product extends Document {
   price: number;
   @Prop({ default: null })
   img: string;
-
-  constructor(data?: Partial<Product>) {
-    super();
-    this.name = data.name;
-    this.price = data.price;
-  }
+  @Prop()
+  amount: number;
 }
 export const ProductSchema = SchemaFactory.createForClass(Product);
