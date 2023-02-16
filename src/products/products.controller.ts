@@ -67,7 +67,7 @@ export class ProductsController {
 
   @Post(':id')
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Get product by id' })
+  @ApiOperation({ summary: 'Buy product' })
   @ApiResponse({ status: 200, description: 'Ok', type: ResponseProductDTO })
   @ApiResponse({ status: 404, description: 'Id invalid' })
   @ApiResponse({ status: 401, description: 'Token invalid' })
